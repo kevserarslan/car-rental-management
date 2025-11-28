@@ -70,4 +70,3 @@ public class Rental {
         PICKED_UP, RETURNED, OVERDUE
     }
 }
-
