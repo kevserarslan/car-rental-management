@@ -27,7 +27,7 @@ public class Category {
     @Column(length = 500)
     private String description;
 
-    @OneToMany(mappedBy = "category")
+    @OneToMany(mappedBy = "category", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
     private List<Car> cars = new ArrayList<>();
 }
 
