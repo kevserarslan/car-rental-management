@@ -43,7 +43,7 @@ public class AuthService {
         UserDto userDto = userService.getUserByEmail(request.getEmail());
 
         // Generate JWT token
-        String token = jwtUtil.generateToken(user.getEmail(), user.getRole().name());
+        String token = jwtUtil.generateToken(userDto.getEmail(), userDto.getRole());
 
         return new AuthResponse(token, userDto);
     }

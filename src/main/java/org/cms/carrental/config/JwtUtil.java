@@ -16,6 +16,8 @@ import java.util.function.Function;
 @Component
 public class JwtUtil {
 
+    // WARNING: This default secret is for development only
+    // In production, always configure jwt.secret via environment variables
     @Value("${jwt.secret:mySecretKeyForJWTTokenGenerationThatIsAtLeast256BitsLong12345678}")
     private String secret;
 
