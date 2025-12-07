@@ -43,30 +43,35 @@ public class CarService {
         return convertToDto(savedCar);
     }
 
+    @Transactional(readOnly = true)
     public CarDto getCarById(Long id) {
         Car car = carRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Car not found with id: " + id));
         return convertToDto(car);
     }
 
+    @Transactional(readOnly = true)
     public CarDto getCarByPlate(String plate) {
         Car car = carRepository.findByPlate(plate)
                 .orElseThrow(() -> new RuntimeException("Car not found with plate: " + plate));
         return convertToDto(car);
     }
 
+    @Transactional(readOnly = true)
     public List<CarDto> getAllCars() {
         return carRepository.findAll().stream()
                 .map(this::convertToDto)
                 .collect(Collectors.toList());
     }
 
+    @Transactional(readOnly = true)
     public List<CarDto> getCarsByCategory(Long categoryId) {
         return carRepository.findByCategoryId(categoryId).stream()
                 .map(this::convertToDto)
                 .collect(Collectors.toList());
     }
 
+    @Transactional(readOnly = true)
     public List<CarDto> getCarsByStatus(String status) {
         Car.CarStatus carStatus = Car.CarStatus.valueOf(status);
         return carRepository.findByStatus(carStatus).stream()
@@ -74,6 +79,7 @@ public class CarService {
                 .collect(Collectors.toList());
     }
 
+    @Transactional(readOnly = true)
     public List<CarDto> getAvailableCarsBetweenDates(LocalDate startDate, LocalDate endDate) {
         return carRepository.findAvailableCarsBetweenDates(startDate, endDate).stream()
                 .map(this::convertToDto)

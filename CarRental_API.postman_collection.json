@@ -1,0 +1,737 @@
+{
+  "info": {
+    "_postman_id": "car-rental-collection",
+    "name": "Car Rental API",
+    "description": "Car Rental API - Test Endpoints\n\n## Yetkilendirme Sistemi\n- **Public**: Herkes erişebilir\n- **USER**: Giriş yapmış kullanıcılar\n- **ADMIN**: Sadece admin kullanıcılar\n\n## Varsayılan Admin\n- Email: admin@carrental.com\n- Password: admin123",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "1. Register (User) - PUBLIC",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var jsonData = pm.response.json();",
+                  "if(jsonData.data && jsonData.data.token) {",
+                  "    pm.environment.set('token', jsonData.data.token);",
+                  "    pm.environment.set('userId', jsonData.data.user.id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Ahmet Yılmaz\",\n  \"email\": \"ahmet@example.com\",\n  \"password\": \"password123\",\n  \"phone\": \"05551234567\",\n  \"address\": \"İstanbul, Türkiye\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/auth/register",
+              "host": ["{{base_url}}"],
+              "path": ["auth", "register"]
+            },
+            "description": "Yeni kullanıcı kaydı oluşturur. Herkes erişebilir. Varsayılan rol: USER"
+          }
+        },
+        {
+          "name": "2. Login (User) - PUBLIC",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var jsonData = pm.response.json();",
+                  "if(jsonData.data && jsonData.data.token) {",
+                  "    pm.environment.set('token', jsonData.data.token);",
+                  "    pm.environment.set('userId', jsonData.data.user.id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"ahmet@example.com\",\n  \"password\": \"password123\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/auth/login",
+              "host": ["{{base_url}}"],
+              "path": ["auth", "login"]
+            },
+            "description": "Kullanıcı girişi yapar ve JWT token döndürür."
+          }
+        },
+        {
+          "name": "3. Login (Admin) - PUBLIC",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "var jsonData = pm.response.json();",
+                  "if(jsonData.data && jsonData.data.token) {",
+                  "    pm.environment.set('admin_token', jsonData.data.token);",
+                  "    pm.environment.set('token', jsonData.data.token);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"admin@carrental.com\",\n  \"password\": \"admin123\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/auth/login",
+              "host": ["{{base_url}}"],
+              "path": ["auth", "login"]
+            },
+            "description": "Admin kullanıcı girişi. Varsayılan admin hesabı ile giriş yapar."
+          }
+        },
+        {
+          "name": "4. Register Admin - ADMIN ONLY",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Yeni Admin\",\n  \"email\": \"newadmin@carrental.com\",\n  \"password\": \"admin456\",\n  \"phone\": \"05559999999\",\n  \"address\": \"Ankara, Türkiye\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/auth/register-admin",
+              "host": ["{{base_url}}"],
+              "path": ["auth", "register-admin"]
+            },
+            "description": "Yeni admin kullanıcı oluşturur. Sadece mevcut adminler yapabilir."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Categories",
+      "item": [
+        {
+          "name": "1. Get All Categories - PUBLIC",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/categories",
+              "host": ["{{base_url}}"],
+              "path": ["categories"]
+            },
+            "description": "Tüm kategorileri listeler. Herkes erişebilir."
+          }
+        },
+        {
+          "name": "2. Get Category by ID - PUBLIC",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/categories/1",
+              "host": ["{{base_url}}"],
+              "path": ["categories", "1"]
+            },
+            "description": "ID'ye göre kategori detayı. Herkes erişebilir."
+          }
+        },
+        {
+          "name": "3. Create Category - ADMIN ONLY",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"SUV\",\n  \"description\": \"Sport Utility Vehicle - Geniş ve konforlu araçlar\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/categories",
+              "host": ["{{base_url}}"],
+              "path": ["categories"]
+            },
+            "description": "Yeni kategori oluşturur. Sadece ADMIN yapabilir."
+          }
+        },
+        {
+          "name": "4. Create Category - Sedan",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Sedan\",\n  \"description\": \"Klasik sedan tipi araçlar\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/categories",
+              "host": ["{{base_url}}"],
+              "path": ["categories"]
+            },
+            "description": "Sedan kategorisi oluşturur. Sadece ADMIN yapabilir."
+          }
+        },
+        {
+          "name": "5. Create Category - Economy",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Ekonomi\",\n  \"description\": \"Uygun fiyatlı ekonomi sınıfı araçlar\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/categories",
+              "host": ["{{base_url}}"],
+              "path": ["categories"]
+            },
+            "description": "Ekonomi kategorisi oluşturur. Sadece ADMIN yapabilir."
+          }
+        },
+        {
+          "name": "6. Update Category - ADMIN ONLY",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"SUV Premium\",\n  \"description\": \"Premium SUV araçlar - Lüks ve konforlu\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/categories/1",
+              "host": ["{{base_url}}"],
+              "path": ["categories", "1"]
+            },
+            "description": "Kategori günceller. Sadece ADMIN yapabilir."
+          }
+        },
+        {
+          "name": "7. Delete Category - ADMIN ONLY",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/categories/3",
+              "host": ["{{base_url}}"],
+              "path": ["categories", "3"]
+            },
+            "description": "Kategori siler. Sadece ADMIN yapabilir."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Cars",
+      "item": [
+        {
+          "name": "1. Get All Cars - PUBLIC",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/cars",
+              "host": ["{{base_url}}"],
+              "path": ["cars"]
+            },
+            "description": "Tüm araçları listeler. Herkes erişebilir."
+          }
+        },
+        {
+          "name": "2. Get Car by ID - PUBLIC",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/cars/1",
+              "host": ["{{base_url}}"],
+              "path": ["cars", "1"]
+            },
+            "description": "ID'ye göre araç detayı. Herkes erişebilir."
+          }
+        },
+        {
+          "name": "3. Get Cars by Category - PUBLIC",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/cars/category/1",
+              "host": ["{{base_url}}"],
+              "path": ["cars", "category", "1"]
+            },
+            "description": "Kategoriye göre araçları listeler. Herkes erişebilir."
+          }
+        },
+        {
+          "name": "4. Get Available Cars - PUBLIC",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/cars/available?startDate=2025-12-10&endDate=2025-12-15",
+              "host": ["{{base_url}}"],
+              "path": ["cars", "available"],
+              "query": [
+                {
+                  "key": "startDate",
+                  "value": "2025-12-10"
+                },
+                {
+                  "key": "endDate",
+                  "value": "2025-12-15"
+                }
+              ]
+            },
+            "description": "Belirli tarihler arasında müsait araçları listeler. Herkes erişebilir."
+          }
+        },
+        {
+          "name": "5. Create Car (Toyota) - ADMIN ONLY",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"brand\": \"Toyota\",\n  \"model\": \"Corolla\",\n  \"year\": 2023,\n  \"plate\": \"34ABC123\",\n  \"description\": \"Ekonomik ve güvenilir araç\",\n  \"dailyPrice\": 450.00,\n  \"status\": \"AVAILABLE\",\n  \"fuelType\": \"Benzin\",\n  \"transmissionType\": \"Otomatik\",\n  \"seatCount\": 5,\n  \"categoryId\": 1\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/cars",
+              "host": ["{{base_url}}"],
+              "path": ["cars"]
+            },
+            "description": "Yeni araç ekler. Sadece ADMIN yapabilir."
+          }
+        },
+        {
+          "name": "6. Create Car (BMW) - ADMIN ONLY",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"brand\": \"BMW\",\n  \"model\": \"X5\",\n  \"year\": 2024,\n  \"plate\": \"34BMW001\",\n  \"description\": \"Lüks SUV araç\",\n  \"dailyPrice\": 1200.00,\n  \"status\": \"AVAILABLE\",\n  \"fuelType\": \"Dizel\",\n  \"transmissionType\": \"Otomatik\",\n  \"seatCount\": 5,\n  \"categoryId\": 1\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/cars",
+              "host": ["{{base_url}}"],
+              "path": ["cars"]
+            },
+            "description": "Yeni BMW araç ekler. Sadece ADMIN yapabilir."
+          }
+        },
+        {
+          "name": "7. Create Car (Mercedes) - ADMIN ONLY",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"brand\": \"Mercedes\",\n  \"model\": \"C180\",\n  \"year\": 2023,\n  \"plate\": \"34MRC001\",\n  \"description\": \"Konforlu sedan\",\n  \"dailyPrice\": 950.00,\n  \"status\": \"AVAILABLE\",\n  \"fuelType\": \"Benzin\",\n  \"transmissionType\": \"Otomatik\",\n  \"seatCount\": 5,\n  \"categoryId\": 2\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/cars",
+              "host": ["{{base_url}}"],
+              "path": ["cars"]
+            },
+            "description": "Yeni Mercedes araç ekler. Sadece ADMIN yapabilir."
+          }
+        },
+        {
+          "name": "8. Update Car - ADMIN ONLY",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"brand\": \"Toyota\",\n  \"model\": \"Corolla\",\n  \"year\": 2024,\n  \"plate\": \"34ABC123\",\n  \"description\": \"Yeni model, ekonomik ve güvenilir\",\n  \"dailyPrice\": 500.00,\n  \"status\": \"AVAILABLE\",\n  \"fuelType\": \"Hybrid\",\n  \"transmissionType\": \"Otomatik\",\n  \"seatCount\": 5,\n  \"categoryId\": 1\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/cars/1",
+              "host": ["{{base_url}}"],
+              "path": ["cars", "1"]
+            },
+            "description": "Araç bilgilerini günceller. Sadece ADMIN yapabilir."
+          }
+        },
+        {
+          "name": "9. Delete Car - ADMIN ONLY",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/cars/3",
+              "host": ["{{base_url}}"],
+              "path": ["cars", "3"]
+            },
+            "description": "Araç siler. Sadece ADMIN yapabilir."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Reservations",
+      "item": [
+        {
+          "name": "1. Create Reservation - USER",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"carId\": 1,\n  \"startDate\": \"2025-12-15\",\n  \"endDate\": \"2025-12-20\",\n  \"notes\": \"Havalimanından teslim alınacak\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/reservations",
+              "host": ["{{base_url}}"],
+              "path": ["reservations"]
+            },
+            "description": "Yeni rezervasyon oluşturur. Giriş yapmış kullanıcılar yapabilir. userId otomatik atanır."
+          }
+        },
+        {
+          "name": "2. Get My Reservations - USER",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/reservations/my",
+              "host": ["{{base_url}}"],
+              "path": ["reservations", "my"]
+            },
+            "description": "Giriş yapmış kullanıcının kendi rezervasyonlarını listeler."
+          }
+        },
+        {
+          "name": "3. Get Reservation by ID - USER",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/reservations/1",
+              "host": ["{{base_url}}"],
+              "path": ["reservations", "1"]
+            },
+            "description": "ID'ye göre rezervasyon detayı. Giriş yapmış kullanıcılar görebilir."
+          }
+        },
+        {
+          "name": "4. Cancel My Reservation - USER",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/reservations/1/cancel",
+              "host": ["{{base_url}}"],
+              "path": ["reservations", "1", "cancel"]
+            },
+            "description": "Rezervasyonu iptal eder. Kullanıcı kendi rezervasyonunu iptal edebilir."
+          }
+        },
+        {
+          "name": "5. Get All Reservations - ADMIN ONLY",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/reservations",
+              "host": ["{{base_url}}"],
+              "path": ["reservations"]
+            },
+            "description": "Tüm rezervasyonları listeler. Sadece ADMIN görebilir."
+          }
+        },
+        {
+          "name": "6. Get Reservations by Status - ADMIN ONLY",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/reservations/status/PENDING",
+              "host": ["{{base_url}}"],
+              "path": ["reservations", "status", "PENDING"]
+            },
+            "description": "Duruma göre rezervasyonları listeler. Durumlar: PENDING, CONFIRMED, CANCELLED, COMPLETED. Sadece ADMIN."
+          }
+        },
+        {
+          "name": "7. Get Reservations by Car - ADMIN ONLY",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/reservations/car/1",
+              "host": ["{{base_url}}"],
+              "path": ["reservations", "car", "1"]
+            },
+            "description": "Araca göre rezervasyonları listeler. Sadece ADMIN."
+          }
+        },
+        {
+          "name": "8. Confirm Reservation - ADMIN ONLY",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/reservations/1/confirm",
+              "host": ["{{base_url}}"],
+              "path": ["reservations", "1", "confirm"]
+            },
+            "description": "Rezervasyonu onaylar. Sadece ADMIN yapabilir."
+          }
+        },
+        {
+          "name": "9. Delete Reservation - ADMIN ONLY",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/reservations/1",
+              "host": ["{{base_url}}"],
+              "path": ["reservations", "1"]
+            },
+            "description": "Rezervasyonu siler. Sadece ADMIN yapabilir."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Vehicle API (External)",
+      "item": [
+        {
+          "name": "Get Vehicle Makes - PUBLIC",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/vehicles/makes",
+              "host": ["{{base_url}}"],
+              "path": ["vehicles", "makes"]
+            },
+            "description": "Dış API'den araç markalarını getirir. Herkes erişebilir."
+          }
+        },
+        {
+          "name": "Get Vehicle Models - PUBLIC",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/vehicles/models?make=Toyota",
+              "host": ["{{base_url}}"],
+              "path": ["vehicles", "models"],
+              "query": [
+                {
+                  "key": "make",
+                  "value": "Toyota"
+                }
+              ]
+            },
+            "description": "Dış API'den markaya göre modelleri getirir. Herkes erişebilir."
+          }
+        }
+      ]
+    }
+  ]
+}
+

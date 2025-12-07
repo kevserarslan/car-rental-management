@@ -8,10 +8,11 @@ import org.cms.carrental.entity.User;
 import org.cms.carrental.repository.CarRepository;
 import org.cms.carrental.repository.ReservationRepository;
 import org.cms.carrental.repository.UserRepository;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -24,10 +25,26 @@ public class ReservationService {
     private final UserRepository userRepository;
     private final CarRepository carRepository;
 
+    /**
+     * Mevcut oturum açmış kullanıcıyı döndürür
+     */
+    private User getCurrentUser() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String email = authentication.getName();
+        return userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("Current user not found"));
+    }
+
     @Transactional
     public ReservationDto createReservation(ReservationDto reservationDto) {
-        User user = userRepository.findById(reservationDto.getUserId())
-                .orElseThrow(() -> new RuntimeException("User not found with id: " + reservationDto.getUserId()));
+        // Mevcut kullanıcıyı al (eğer userId belirtilmemişse)
+        User user;
+        if (reservationDto.getUserId() != null) {
+            user = userRepository.findById(reservationDto.getUserId())
+                    .orElseThrow(() -> new RuntimeException("User not found with id: " + reservationDto.getUserId()));
+        } else {
+            user = getCurrentUser();
+        }
 
         Car car = carRepository.findById(reservationDto.getCarId())
                 .orElseThrow(() -> new RuntimeException("Car not found with id: " + reservationDto.getCarId()));
@@ -82,6 +99,16 @@ public class ReservationService {
 
     public List<ReservationDto> getReservationsByUserId(Long userId) {
         return reservationRepository.findByUserId(userId).stream()
+                .map(this::convertToDto)
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * Mevcut oturum açmış kullanıcının rezervasyonlarını döndürür
+     */
+    public List<ReservationDto> getMyReservations() {
+        User currentUser = getCurrentUser();
+        return reservationRepository.findByUserId(currentUser.getId()).stream()
                 .map(this::convertToDto)
                 .collect(Collectors.toList());
     }

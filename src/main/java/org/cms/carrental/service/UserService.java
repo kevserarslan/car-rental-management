@@ -39,6 +39,28 @@ public class UserService {
         return convertToDto(savedUser);
     }
 
+    /**
+     * Admin kullanıcısı oluştur - Sadece mevcut admin tarafından çağrılabilir
+     */
+    @Transactional
+    public UserDto registerAdmin(RegisterRequest request) {
+        if (userRepository.existsByEmail(request.getEmail())) {
+            throw new RuntimeException("Email already exists");
+        }
+
+        User user = new User();
+        user.setName(request.getName());
+        user.setEmail(request.getEmail());
+        user.setPassword(passwordEncoder.encode(request.getPassword()));
+        user.setPhone(request.getPhone());
+        user.setAddress(request.getAddress());
+        user.setDriverLicense(request.getDriverLicense());
+        user.setRole(User.Role.ADMIN);
+
+        User savedUser = userRepository.save(user);
+        return convertToDto(savedUser);
+    }
+
     public UserDto getUserById(Long id) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("User not found with id: " + id));
