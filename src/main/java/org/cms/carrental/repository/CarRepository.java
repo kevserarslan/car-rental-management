@@ -22,6 +22,16 @@ public interface CarRepository extends JpaRepository<Car, Long> {
 
     List<Car> findByCategoryId(Long categoryId);
 
+    // Category ile birlikte fetch et (Lazy loading sorunu için)
+    @Query("SELECT c FROM Car c LEFT JOIN FETCH c.category")
+    List<Car> findAllWithCategory();
+
+    @Query("SELECT c FROM Car c LEFT JOIN FETCH c.category WHERE c.category.id = :categoryId")
+    List<Car> findByCategoryIdWithCategory(@Param("categoryId") Long categoryId);
+
+    @Query("SELECT c FROM Car c LEFT JOIN FETCH c.category WHERE c.status = :status")
+    List<Car> findByStatusWithCategory(@Param("status") Car.CarStatus status);
+
     @Query("SELECT c FROM Car c WHERE c.status = 'AVAILABLE' " +
            "AND c.id NOT IN (" +
            "SELECT r.car.id FROM Reservation r " +

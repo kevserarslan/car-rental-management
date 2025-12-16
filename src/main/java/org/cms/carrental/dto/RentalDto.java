@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 public class RentalDto {
     private Long id;
 
-    @NotNull(message = "Pickup date is required")
+
     private LocalDateTime pickupDate;
 
     private LocalDateTime returnDate;

@@ -25,7 +25,7 @@ public class ReservationDto {
 
     private String notes;
 
-    @NotNull(message = "User ID is required")
+    // userId opsiyonel - gönderilmezse mevcut kullanıcı otomatik atanır
     private Long userId;
 
     @NotNull(message = "Car ID is required")

@@ -85,18 +85,21 @@ public class ReservationService {
         return convertToDto(savedReservation);
     }
 
+    @Transactional(readOnly = true)
     public ReservationDto getReservationById(Long id) {
         Reservation reservation = reservationRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Reservation not found with id: " + id));
         return convertToDto(reservation);
     }
 
+    @Transactional(readOnly = true)
     public List<ReservationDto> getAllReservations() {
         return reservationRepository.findAll().stream()
                 .map(this::convertToDto)
                 .collect(Collectors.toList());
     }
 
+    @Transactional(readOnly = true)
     public List<ReservationDto> getReservationsByUserId(Long userId) {
         return reservationRepository.findByUserId(userId).stream()
                 .map(this::convertToDto)
@@ -106,6 +109,7 @@ public class ReservationService {
     /**
      * Mevcut oturum açmış kullanıcının rezervasyonlarını döndürür
      */
+    @Transactional(readOnly = true)
     public List<ReservationDto> getMyReservations() {
         User currentUser = getCurrentUser();
         return reservationRepository.findByUserId(currentUser.getId()).stream()
@@ -113,12 +117,14 @@ public class ReservationService {
                 .collect(Collectors.toList());
     }
 
+    @Transactional(readOnly = true)
     public List<ReservationDto> getReservationsByCarId(Long carId) {
         return reservationRepository.findByCarId(carId).stream()
                 .map(this::convertToDto)
                 .collect(Collectors.toList());
     }
 
+    @Transactional(readOnly = true)
     public List<ReservationDto> getReservationsByStatus(String status) {
         Reservation.ReservationStatus reservationStatus = Reservation.ReservationStatus.valueOf(status);
         return reservationRepository.findByStatus(reservationStatus).stream()

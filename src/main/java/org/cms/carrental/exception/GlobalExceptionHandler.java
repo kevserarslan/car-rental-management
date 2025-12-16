@@ -15,17 +15,6 @@ import java.util.Map;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler(VehicleApiException.class)
-    public ResponseEntity<ErrorResponse> handleVehicleApiException(
-            VehicleApiException ex,
-            WebRequest request) {
-        ErrorResponse error = new ErrorResponse(
-                HttpStatus.SERVICE_UNAVAILABLE.value(),
-                ex.getMessage(),
-                request.getDescription(false).replace("uri=", "")
-        );
-        return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body(error);
-    }
 
     @ExceptionHandler(RuntimeException.class)
     public ResponseEntity<ErrorResponse> handleRuntimeException(

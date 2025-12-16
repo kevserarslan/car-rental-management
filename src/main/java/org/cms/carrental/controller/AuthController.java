@@ -10,7 +10,14 @@ import org.cms.carrental.service.AuthService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/auth")
@@ -50,6 +57,34 @@ public class AuthController {
     public ResponseEntity<ApiResponse<AuthResponse>> login(@Valid @RequestBody LoginRequest request) {
         AuthResponse authResponse = authService.login(request);
         return ResponseEntity.ok(ApiResponse.success("Login successful", authResponse));
+    }
+
+    /**
+     * Mevcut kullanıcının authentication bilgilerini kontrol et (Debug)
+     */
+    @GetMapping("/check")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<ApiResponse<Map<String, Object>>> checkAuth() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        Map<String, Object> authInfo = new HashMap<>();
+        authInfo.put("username", authentication.getName());
+        authInfo.put("authorities", authentication.getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority)
+                .collect(Collectors.toList()));
+        authInfo.put("isAuthenticated", authentication.isAuthenticated());
+        authInfo.put("principal", authentication.getPrincipal().toString());
+
+        return ResponseEntity.ok(ApiResponse.success("Auth info", authInfo));
+    }
+
+    /**
+     * Admin yetkisi kontrolü (Debug)
+     */
+    @GetMapping("/check-admin")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<ApiResponse<String>> checkAdmin() {
+        return ResponseEntity.ok(ApiResponse.success("You have ADMIN role!", "ADMIN access granted"));
     }
 }
 

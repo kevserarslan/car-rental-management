@@ -55,9 +55,11 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowedOrigins(List.of("http://localhost:3000", "http://localhost:5173", "http://localhost:8080"));
-        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-        configuration.setAllowedHeaders(List.of("*"));
+        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
+        configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type", "X-Requested-With", "Accept", "Origin", "Access-Control-Request-Method", "Access-Control-Request-Headers"));
+        configuration.setExposedHeaders(Arrays.asList("Authorization", "Content-Type"));
         configuration.setAllowCredentials(true);
+        configuration.setMaxAge(3600L);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
@@ -75,9 +77,18 @@ public class SecurityConfig {
                         })
                 )
                 .authorizeHttpRequests(auth -> auth
+                        // Thymeleaf sayfaları - Server-side rendered pages (herkese açık)
+                        .requestMatchers("/", "/about", "/cars-page", "/cars-page/**", "/error").permitAll()
+
+                        // Statik kaynaklar (CSS, JS, images)
+                        .requestMatchers("/static/**", "/css/**", "/js/**", "/images/**", "/webjars/**").permitAll()
+
                         // Public endpoints - Register ve Login herkese açık
                         .requestMatchers("/auth/register", "/auth/login").permitAll()
-                        .requestMatchers("/vehicles/**").permitAll()
+                        // Auth check endpoints - authenticated users
+                        .requestMatchers("/auth/check", "/auth/check-admin").authenticated()
+                        // Currency API - Döviz kurları herkese açık (External API)
+                        .requestMatchers("/currency/**").permitAll()
 
                         // Cars - GET herkese açık (herkes arabaları görebilir)
                         .requestMatchers(org.springframework.http.HttpMethod.GET, "/cars", "/cars/**").permitAll()
@@ -102,7 +113,8 @@ public class SecurityConfig {
                         // Rentals - Admin only (Kiralama işlemleri sadece admin)
                         .requestMatchers("/rentals/**").hasRole("ADMIN")
 
-                        // Users - Admin only (Kullanıcı yönetimi sadece admin)
+                        // Users - /me endpoint'i authenticated kullanıcılar için, diğerleri admin
+                        .requestMatchers("/users/me").authenticated()
                         .requestMatchers("/users/**").hasRole("ADMIN")
 
                         // Diğer tüm istekler authentication gerektirir
