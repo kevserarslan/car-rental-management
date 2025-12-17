@@ -78,7 +78,7 @@ public class SecurityConfig {
                 )
                 .authorizeHttpRequests(auth -> auth
                         // Thymeleaf sayfaları - Server-side rendered pages (herkese açık)
-                        .requestMatchers("/", "/about", "/cars-page", "/cars-page/**", "/error").permitAll()
+                        .requestMatchers("/", "/cars-page", "/cars-page/**", "/error").permitAll()
 
                         // Statik kaynaklar (CSS, JS, images)
                         .requestMatchers("/static/**", "/css/**", "/js/**", "/images/**", "/webjars/**").permitAll()
