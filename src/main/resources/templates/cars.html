@@ -91,10 +91,14 @@
                 </li>
 
                 <li class="nav-item">
-                    <a class="nav-link" href="http://localhost:3000/login"><i class="fas fa-sign-in-alt me-1"></i> Giriş</a>
+                    <a class="nav-link" th:href="${@environment.getProperty('app.frontend.url') + '/login'}">
+                        <i class="fas fa-sign-in-alt me-1"></i> Giriş
+                    </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="http://localhost:3000/register"><i class="fas fa-user-plus me-1"></i> Kayıt Ol</a>
+                    <a class="nav-link" th:href="${@environment.getProperty('app.frontend.url') + '/register'}">
+                        <i class="fas fa-user-plus me-1"></i> Kayıt Ol
+                    </a>
                 </li>
             </ul>
         </div>
@@ -217,8 +221,8 @@
                         </button>
                         <small class="text-muted d-block text-center mt-2">
                             <i class="fas fa-lock me-1"></i>
-                            <a href="http://localhost:3000/login" class="text-decoration-none">Giriş yapın</a> veya
-                            <a href="http://localhost:3000/register" class="text-decoration-none">kayıt olun</a>
+                            <a th:href="${@environment.getProperty('app.frontend.url') + '/login'}" class="text-decoration-none">Giriş yapın</a> veya
+                            <a th:href="${@environment.getProperty('app.frontend.url') + '/register'}" class="text-decoration-none">kayıt olun</a>
                         </small>
                     </div>
                 </div>
